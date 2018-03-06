@@ -1,9 +1,13 @@
 <template>
   <v-toolbar>
   	<div>Vue app</div>
-  	<v-btn color="primary" v-on:click="signOut">sign out</v-btn>
-  	<v-layout row justify-space-around>
-  	  <v-dialog v-model="showSignUp" persistent max-width="500px">
+    <v-layout row v-bind:style="{justifyContent: 'flex-end'}">
+      <div v-if="currentUser">
+        <v-icon left>account_circle</v-icon>
+        {{currentUser.displayName}}
+        <v-btn color="primary" v-on:click="signOut">sign out</v-btn>
+      </div>  
+  	  <v-dialog v-if="loggedIn === false" v-model="showSignUp" persistent max-width="500px">
       <v-btn color="primary" dark slot="activator">Sign Up</v-btn>
       <v-card>
         <v-card-title>
@@ -16,7 +20,7 @@
                 <v-text-field label="Username" v-model="userName"></v-text-field>
               </v-flex>
               <v-flex xs12>
-                <v-text-field label="Email" v-model="signUpEmail"></v-text-field>
+                <v-text-field label="Email" type="email" v-model="signUpEmail"></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-text-field label="Password" type="password" v-model="signUpPassword"></v-text-field>
@@ -30,12 +34,12 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <p>{{signUpError}}</p>
-          <v-btn color="primary" @click.native="showSignUp = false">Close</v-btn>
+          <v-btn color="primary" @click.native="closeSignUp">Close</v-btn>
           <v-btn color="primary" @click.native="signUp">Submit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="showSignIn" persistent max-width="500px">
+    <v-dialog v-if="loggedIn === false" v-model="showSignIn" persistent max-width="500px">
       <v-btn color="primary" dark slot="activator">Sign In</v-btn>
       <v-card>
         <v-card-title>
@@ -45,10 +49,10 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12>
-                <v-text-field label="Email"></v-text-field>
+                <v-text-field label="Email" type="email" v-model="signInEmail"></v-text-field>
               </v-flex>
               <v-flex xs12>
-                <v-text-field label="Password" type="password"></v-text-field>
+                <v-text-field label="Password" type="password" v-model="signInPassword"></v-text-field>
               </v-flex>
             </v-layout>
           </v-container>
@@ -56,8 +60,8 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <p>{{signInError}}</p>
-          <v-btn color="primary" @click.native="showSignIn = false">Close</v-btn>
-          <v-btn color="primary" @click.native="showSignIn = false">Submit</v-btn>
+          <v-btn color="primary" @click.native="closeSignIn">Close</v-btn>
+          <v-btn color="primary" @click.native="signIn">Submit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -69,19 +73,20 @@
 import firebase from 'firebase';
 
 export default {
+  props: ['currentUser', 'loggedIn'],
   data () {
     return {
         showSignUp: false,
-    	showSignIn: false,
-    	userName: '',
-		signInEmail: '',
-		signInPassword: '',
-		signInError: '',
-		signUpEmail: '',
-		signUpPassword: '',
-		signUpConfirmPassword: '',
-		signInError: '',
-		signUpError: ''	
+      	showSignIn: false,
+      	userName: '',
+    		signInEmail: '',
+    		signInPassword: '',
+    		signInError: '',
+    		signUpEmail: '',
+    		signUpPassword: '',
+    		signUpConfirmPassword: '',
+    		signInError: '',
+    		signUpError: ''	
     }
   },
   name: 'Header',
@@ -94,9 +99,14 @@ export default {
 						.then((user) => {
 							user.updateProfile({ displayName: this.userName });
 							this.showSignUp = false;
+              this.userName = '';
+              this.signUpError = '';
+              this.signUpEmail = '';
+              this.signUpPassword = '';
+              this.signUpConfirmPassword = '';
 						})
 						.catch(() => {
-							this.signUpError = 'User already exist';
+							this.signUpError = 'Email is invalid';
 						});
 				} else {
 					this.signUpError = 'Password must be atleast 6 characters';
@@ -111,7 +121,41 @@ export default {
 
   	signOut: function(){
   		firebase.auth().signOut();
-  	}
+  	},
+
+    signIn: function(){
+      if(this.signInEmail !== '' && this.signInPassword !== ''){
+        firebase.auth().signInWithEmailAndPassword(this.signInEmail, this.signInPassword)
+          .then((user) => {
+              this.showSignIn = false;
+              this.signInEmail = '';
+              this.signInPassword = '';
+              this.signInError = '';
+          })
+          .catch(() => {
+            this.signInError = 'Wrong Email or Password';
+          });
+      }
+      else {
+        this.signInError = 'Please fill out both fields';
+      }
+    },
+
+    closeSignIn: function(){
+      this.showSignIn = false;
+      this.signInEmail = '';
+      this.signInPassword = '';
+      this.signInError = '';
+    },
+
+    closeSignUp: function(){
+      this.showSignUp = false;
+      this.signUpEmail = '';
+      this.signUpPassword = '';
+      this.signUpError = '';
+      this.userName = '';
+      this.signUpConfirmPassword = '';
+    }
   }
 }
 </script>

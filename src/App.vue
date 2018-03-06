@@ -1,7 +1,6 @@
 <template>
   <v-app>
-    {{loggedIn}}
-    <app-header></app-header>    
+    <app-header v-bind:currentUser="currentUser" v-bind:loggedIn="loggedIn"></app-header>    
     <router-view/>
   </v-app>
 </template>
@@ -15,7 +14,8 @@ export default {
   },
   data () {
     return {
-      loggedIn: null
+      loggedIn: null,
+      currentUser: null
     }
   },
   name: 'App',
@@ -23,8 +23,10 @@ export default {
     firebase.auth().onAuthStateChanged((user) => {
       if(user){
         this.loggedIn = true;
+        this.currentUser = user;
       } else {
         this.loggedIn = false;
+        this.currentUser = null;
       }
     });
   }
