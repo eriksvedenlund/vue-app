@@ -3,10 +3,11 @@ import App from './App';
 import router from './router';
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
-import firebase from 'firebase';
-import config from './firebaseConfig';
+import './firebaseConfig';
+import VueFire from 'vuefire';
 
 Vue.use(Vuetify);
+Vue.use(VueFire);
 
 Vue.config.productionTip = false;
 
@@ -15,8 +16,5 @@ new Vue({
   el: '#app',
   router,
   components: { App },
-  template: '<App/>',
-  created(){
-  	firebase.initializeApp(config);
-  }
+  template: '<App/>'
 })

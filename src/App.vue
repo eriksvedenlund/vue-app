@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <app-header v-bind:currentUser="currentUser" v-bind:loggedIn="loggedIn"></app-header>    
-    <router-view/>
+    <router-view v-bind:currentUser="currentUser" v-bind:loggedIn="loggedIn"/>
   </v-app>
 </template>
 
