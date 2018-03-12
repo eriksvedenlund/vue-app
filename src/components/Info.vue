@@ -1,18 +1,33 @@
 <template>
   <div>
     <div>{{filteredBoxes[0].title}}</div>
+    <div v-for="commentObj in filteredBoxes[0].comments">
+      <div v-for="comment in commentObj">
+        {{comment.comment}} {{comment.commentOwnerName}}
+        <div v-if="loggedIn === false"></div>
+        <v-btn color="primary" v-else-if="comment.commentOwnerId == currentUser.uid" v-on:click="removeComment(comment.id)">
+        ta väck</v-btn>
+      </div>
+    </div>
     <img v-bind:src="filteredBoxes[0].imageUrl">
+    <v-text-field
+      v-model="comment"
+      label="Comment"
+      multi-line>
+    </v-text-field>
+    <v-btn color="info" v-on:click="postComment">nahpsadus</v-btn>
   </div>
 </template>
 
 <script>
 import { boxesRef, db } from '../firebaseConfig';
 export default {
-  props: ['id'],
+  props: ['id', 'currentUser', 'loggedIn'],
 	name: 'Info',
 	data(){
 		return {
-      boxes: []
+      boxes: [],
+      comment: ''
 		}
 	},
   created(){
@@ -34,6 +49,21 @@ export default {
       return this.boxes.filter((item) => {
         return item.id === this.id;
       })
+    }
+  },
+  methods: {
+    postComment: function(){
+      db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
+      .push({comment: this.comment, commentOwnerId: this.currentUser.uid, commentOwnerName: this.currentUser.displayName})
+      .then((data) => {
+        db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
+        .child(data.key).update({id: data.key});
+      })
+    },
+
+    removeComment: function(id){
+      db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}/${id}`)
+      .remove();
     }
   }
 }
