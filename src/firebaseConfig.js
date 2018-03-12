@@ -5,9 +5,10 @@ const app = firebase.initializeApp({
     authDomain: "vue-project-c62fd.firebaseapp.com",
     databaseURL: "https://vue-project-c62fd.firebaseio.com",
     projectId: "vue-project-c62fd",
-    storageBucket: "vue-project-c62fd.appspot.com",
+    storageBucket: "gs://vue-project-c62fd.appspot.com/",
     messagingSenderId: "751330410500"
 });
 
 export const db = app.database();
+export const storage = app.storage();
 export const boxesRef = db.ref('boxes');

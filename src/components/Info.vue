@@ -1,5 +1,8 @@
 <template>
-  <div>{{filteredBoxes[0].title}}</div>
+  <div>
+    <div>{{filteredBoxes[0].title}}</div>
+    <img v-bind:src="filteredBoxes[0].imageUrl">
+  </div>
 </template>
 
 <script>
@@ -35,3 +38,10 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  img {
+    width: 200px;
+    height: 200px;
+  }
+</style>

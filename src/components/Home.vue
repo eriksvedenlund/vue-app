@@ -3,13 +3,15 @@
     <div class="inputContainer">
     	<label>Title</label>
     	<input type="text" v-model="title" />
+      <input type="file" accept="image/*" v-on:change="pickFile" ref="fileInput" />
     	<v-btn color="primary" v-on:click="send">Send</v-btn>
       <div>{{sendError}}</div>
     </div>
     <div class="boxContainer">
     	<div v-for="box in boxes" class="box">
     		<router-link v-bind:to="'/info/' + box.id">{{box.title}}</router-link>
-    		<div v-if="loggedIn === false"></div>
+        <img v-bind:src="box.imageUrl">
+        <div v-if="loggedIn === false"></div>
     		<v-btn color="primary" v-else-if="box.owner == currentUser.uid" v-on:click="remove(box.id)">Delete</v-btn>
     	</div>
     </div>
@@ -17,7 +19,7 @@
 </template>
 
 <script>
-import { boxesRef, db } from '../firebaseConfig';
+import { boxesRef, db, storage } from '../firebaseConfig';
 
 export default {
   props: ['currentUser', 'loggedIn'],
@@ -25,7 +27,8 @@ export default {
     return {
       title: '',
       boxes: [],
-      sendError: ''
+      sendError: '',
+      image: null
     }
   },
   name: 'Home',
@@ -41,6 +44,7 @@ export default {
 				}
 			}
 			this.boxes = list;
+      console.log(this.boxes);
 		});
   },
   // firebase: {
@@ -53,14 +57,37 @@ export default {
         this.sendError = 'You need to sign in to post';
         this.title = '';
       } else {
-    		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid});
+        let imageUrl;
+        let key;
+    		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid})
+          .then((data) => {
+            key = data.key;
+            return key;
+          })
+          .then((key) => {
+            const filename = this.image.name;
+            const ext = filename.slice(filename.lastIndexOf('.'));
+            this.$refs.fileInput.value = '';  
+            return storage.ref('images/' + key + '.' + ext).put(this.image);
+          })
+          .then((fileData) => {
+            imageUrl = fileData.metadata.downloadURLs[0];
+            db.ref(`boxes/${this.currentUser.uid}`).child(key).update({imageUrl: imageUrl});
+          })
+          .catch((error) => {
+            this.sendError = 'Something went wrong';
+          })
     		this.title = '';
       }
   	},
 
   	remove: function(id){
   		db.ref(`boxes/${this.currentUser.uid}/${id}`).remove();
-  	}
+  	},
+
+    pickFile: function(event){
+      this.image = event.target.files[0];
+    }
   }
 }
 </script>
@@ -88,5 +115,10 @@ export default {
     height: 200px;
     border: 1px solid black;
     margin: 5px;
+
+    img {
+      width: 100px;
+      height: 100px;
+    }
   }  
 </style>
