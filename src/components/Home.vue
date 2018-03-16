@@ -44,48 +44,62 @@ export default {
 				}
 			}
 			this.boxes = list;
-      console.log(this.boxes);
 		});
   },
   // firebase: {
   // 	boxes: db.ref(`boxes`)
   // },
   methods: {
-  	send: function(){
+  	send(){
       this.sendError = '';
-      if(this.loggedIn === false){
-        this.sendError = 'You need to sign in to post';
-        this.title = '';
-      } else {
+      if(this.loggedIn){
         let imageUrl;
         let key;
-    		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid})
-          .then((data) => {
-            key = data.key;
-            return key;
-          })
-          .then((key) => {
-            const filename = this.image.name;
-            const ext = filename.slice(filename.lastIndexOf('.'));
-            this.$refs.fileInput.value = '';  
-            return storage.ref('images/' + key + '.' + ext).put(this.image);
-          })
-          .then((fileData) => {
-            imageUrl = fileData.metadata.downloadURLs[0];
-            db.ref(`boxes/${this.currentUser.uid}`).child(key).update({imageUrl: imageUrl});
-          })
-          .catch((error) => {
-            this.sendError = 'Something went wrong';
-          })
-    		this.title = '';
+        if(this.title === '' || this.image === null){
+          this.sendError = 'Fill out title and image to post';
+        } else {
+          let fileType = this.image.type;
+          fileType = fileType.slice(0, fileType.lastIndexOf('/'));
+          if(fileType !== 'image'){
+            this.sendError = 'Please select a valid image';
+            this.image = null;
+            this.$refs.fileInput.value = '';
+          } else {
+        		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid})
+              .then((data) => {
+                key = data.key;
+                return key;
+              })
+              .then((key) => {
+                const filename = this.image.name;
+                const ext = filename.slice(filename.lastIndexOf('.'));
+                this.$refs.fileInput.value = '';  
+                return storage.ref('images/' + key + '.' + ext).put(this.image);
+              })
+              .then((fileData) => {
+                this.image = null;
+                imageUrl = fileData.metadata.downloadURLs[0];
+                db.ref(`boxes/${this.currentUser.uid}`).child(key).update({imageUrl: imageUrl});
+              })
+              .catch((error) => {
+                this.sendError = 'Something went wrong';
+              })
+        		this.title = '';
+          }
+        }
+      } else {
+        this.sendError = 'You need to sign in to post';
+        this.title = '';
+        this.image = null;
+        this.$refs.fileInput.value = '';
       }
-  	},
+    },
 
-  	remove: function(id){
+  	remove(id){
   		db.ref(`boxes/${this.currentUser.uid}/${id}`).remove();
   	},
 
-    pickFile: function(event){
+    pickFile(event){
       this.image = event.target.files[0];
     }
   }

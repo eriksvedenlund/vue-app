@@ -16,6 +16,7 @@
       multi-line>
     </v-text-field>
     <v-btn color="info" v-on:click="postComment">nahpsadus</v-btn>
+    <p>{{loggedInError}}</p>
   </div>
 </template>
 
@@ -27,7 +28,8 @@ export default {
 	data(){
 		return {
       boxes: [],
-      comment: ''
+      comment: '',
+      loggedInError: ''
 		}
 	},
   created(){
@@ -45,23 +47,30 @@ export default {
     });
   },
   computed: {
-    filteredBoxes: function(){
+    filteredBoxes(){
       return this.boxes.filter((item) => {
         return item.id === this.id;
       })
     }
   },
   methods: {
-    postComment: function(){
-      db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
-      .push({comment: this.comment, commentOwnerId: this.currentUser.uid, commentOwnerName: this.currentUser.displayName})
-      .then((data) => {
+    postComment(){
+      this.loggedInError = '';
+      if(this.loggedIn){
         db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
-        .child(data.key).update({id: data.key});
-      })
+        .push({comment: this.comment, commentOwnerId: this.currentUser.uid, commentOwnerName: this.currentUser.displayName})
+        .then((data) => {
+          this.comment = '';
+          db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
+          .child(data.key).update({id: data.key});
+        })
+      } else {
+        this.loggedInError = 'You need to sign in to post a comment';
+        this.comment = '';
+      }
     },
 
-    removeComment: function(id){
+    removeComment(id){
       db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}/${id}`)
       .remove();
     }

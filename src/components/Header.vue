@@ -1,6 +1,6 @@
 <template>
   <v-toolbar>
-  	<div>Vue app</div>
+  	<div><router-link to="/">Vue app</router-link></div>
     <v-layout row v-bind:style="{justifyContent: 'flex-end'}">
       <div v-if="currentUser">
         <v-icon left>account_circle</v-icon>
@@ -91,7 +91,7 @@ export default {
   },
   name: 'Header',
   methods: {
-  	signUp: function(){
+  	signUp(){
 		if(this.userName !== ''){
 			if(this.signUpPassword === this.signUpConfirmPassword){
 				if(this.signUpPassword.length >= 6 || this.signUpConfirmPassword.length >= 6){
@@ -119,11 +119,11 @@ export default {
 		}
   	},
 
-  	signOut: function(){
+  	signOut(){
   		firebase.auth().signOut();
   	},
 
-    signIn: function(){
+    signIn(){
       if(this.signInEmail !== '' && this.signInPassword !== ''){
         firebase.auth().signInWithEmailAndPassword(this.signInEmail, this.signInPassword)
           .then((user) => {
@@ -141,14 +141,14 @@ export default {
       }
     },
 
-    closeSignIn: function(){
+    closeSignIn(){
       this.showSignIn = false;
       this.signInEmail = '';
       this.signInPassword = '';
       this.signInError = '';
     },
 
-    closeSignUp: function(){
+    closeSignUp(){
       this.showSignUp = false;
       this.signUpEmail = '';
       this.signUpPassword = '';
