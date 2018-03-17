@@ -16,7 +16,10 @@
       multi-line>
     </v-text-field>
     <v-btn color="info" v-on:click="postComment">nahpsadus</v-btn>
+    <v-btn color="info" v-on:click="upVote">up</v-btn>
+    <v-btn color="info" v-on:click="downVote">down</v-btn>
     <p>{{loggedInError}}</p>
+    <div>{{allVotes}}</div>
   </div>
 </template>
 
@@ -29,7 +32,8 @@ export default {
 		return {
       boxes: [],
       comment: '',
-      loggedInError: ''
+      loggedInError: '',
+      userVote: 0
 		}
 	},
   created(){
@@ -51,6 +55,18 @@ export default {
       return this.boxes.filter((item) => {
         return item.id === this.id;
       })
+    },
+    allVotes(){
+      let voteCount = 0;
+      this.filteredBoxes.forEach((item) => {
+        for(let key in item.votes){
+          if(key === this.currentUser.uid){
+            this.userVote = item.votes[key].vote;
+          }
+          voteCount += item.votes[key].vote;
+        }
+      });
+      return voteCount;
     }
   },
   methods: {
@@ -73,6 +89,18 @@ export default {
     removeComment(id){
       db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}/${id}`)
       .remove();
+    },
+
+    upVote(){
+      let myVote = this.userVote === 1 ? 0 : 1;
+      db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
+      .update({vote: myVote});
+    },
+
+    downVote(){
+      let myVote = this.userVote === -1 ? 0 : -1;
+      db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
+      .update({vote: myVote});
     }
   }
 }
