@@ -9,6 +9,7 @@
     </div>
     <div class="boxContainer">
     	<div v-for="box in boxes" class="box">
+        <div>{{box.votes | total}}</div>
     		<router-link v-bind:to="'/info/' + box.id">{{box.title}}</router-link>
         <img v-bind:src="box.imageUrl">
         <div v-if="loggedIn === false"></div>
@@ -46,6 +47,21 @@ export default {
 			this.boxes = list;
 		});
   },
+  filters: {
+    total(votes){
+      let list = [];
+      for(let key in votes){
+        list.push(votes[key]); 
+      }
+      return list.map((v)=>v.vote).reduce((total, v) => {
+          return total + v}, 0);
+    }
+  },
+  // computed: {
+  //   votes(){
+  //     return this.boxes;
+  //   }
+  // },
   // firebase: {
   // 	boxes: db.ref(`boxes`)
   // },

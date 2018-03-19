@@ -15,11 +15,13 @@
       label="Comment"
       multi-line>
     </v-text-field>
-    <v-btn color="info" v-on:click="postComment">nahpsadus</v-btn>
-    <v-btn color="info" v-on:click="upVote">up</v-btn>
-    <v-btn color="info" v-on:click="downVote">down</v-btn>
-    <p>{{loggedInError}}</p>
-    <div>{{allVotes}}</div>
+    <v-btn color="info" v-on:click="postComment">post</v-btn>
+    <div>
+      <v-icon v-bind:class="{upvoted : this.userVote > 0}" class="thumb" v-on:click="upVote">thumb_up</v-icon>  
+      <div>{{allVotes}}</div>
+      <v-icon v-bind:class="{downvoted : this.userVote < 0}" class="thumb" v-on:click="downVote">thumb_down</v-icon>
+    </div>
+    <p>{{errorMsg}}</p>
   </div>
 </template>
 
@@ -32,7 +34,7 @@ export default {
 		return {
       boxes: [],
       comment: '',
-      loggedInError: '',
+      errorMsg: '',
       userVote: 0
 		}
 	},
@@ -60,7 +62,7 @@ export default {
       let voteCount = 0;
       this.filteredBoxes.forEach((item) => {
         for(let key in item.votes){
-          if(key === this.currentUser.uid){
+          if(this.loggedIn !== false && key === this.currentUser.uid){
             this.userVote = item.votes[key].vote;
           }
           voteCount += item.votes[key].vote;
@@ -71,17 +73,21 @@ export default {
   },
   methods: {
     postComment(){
-      this.loggedInError = '';
+      this.errorMsg = '';
       if(this.loggedIn){
-        db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
-        .push({comment: this.comment, commentOwnerId: this.currentUser.uid, commentOwnerName: this.currentUser.displayName})
-        .then((data) => {
-          this.comment = '';
+        if(this.comment !== ''){
           db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
-          .child(data.key).update({id: data.key});
-        })
+          .push({comment: this.comment, commentOwnerId: this.currentUser.uid, commentOwnerName: this.currentUser.displayName})
+          .then((data) => {
+            this.comment = '';
+            db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
+            .child(data.key).update({id: data.key});
+          })
+        } else {
+          this.errorMsg = 'Write a comment to post';
+        }
       } else {
-        this.loggedInError = 'You need to sign in to post a comment';
+        this.errorMsg = 'You need to sign in to post a comment';
         this.comment = '';
       }
     },
@@ -92,15 +98,25 @@ export default {
     },
 
     upVote(){
-      let myVote = this.userVote === 1 ? 0 : 1;
-      db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
-      .update({vote: myVote});
+      this.errorMsg = '';
+      if(this.loggedIn){
+        let myVote = this.userVote === 1 ? 0 : 1;
+        db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
+        .update({vote: myVote});
+      } else {
+        this.errorMsg = 'You need to sign in to vote';
+      }
     },
 
     downVote(){
-      let myVote = this.userVote === -1 ? 0 : -1;
-      db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
-      .update({vote: myVote});
+      this.errorMsg = '';
+      if(this.loggedIn){
+        let myVote = this.userVote === -1 ? 0 : -1;
+        db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
+        .update({vote: myVote});
+      } else {
+        this.errorMsg = 'You need to sign in to vote';
+      }
     }
   }
 }
@@ -110,5 +126,17 @@ export default {
   img {
     width: 200px;
     height: 200px;
+  }
+
+  .thumb {
+    cursor: pointer;
+  }
+
+  .upvoted {
+    color: limegreen;
+  }
+
+  .downvoted {
+    color: red;
   }
 </style>
