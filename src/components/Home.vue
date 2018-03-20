@@ -9,12 +9,16 @@
     </div>
     <div class="boxContainer">
     	<div v-for="box in boxes" class="box">
-        <div>{{box.votes | total}}</div>
-        <div>{{box.comments | totalComments}}</div>
-    		<router-link v-bind:to="'/info/' + box.id">{{box.title}}</router-link>
         <img v-bind:src="box.imageUrl">
-        <div v-if="loggedIn === false"></div>
-    		<v-btn color="primary" v-else-if="box.owner == currentUser.uid" v-on:click="remove(box.id)">Delete</v-btn>
+        <div class="bottomBox">
+          <div><router-link v-bind:to="'/info/' + box.id">{{box.title}}</router-link></div>
+          <div class="infoBox">
+            <div><v-icon>thumb_up</v-icon>{{box.votes | total}}</div>
+            <div><v-icon>mode_comment</v-icon>{{box.comments | totalComments}}</div>
+            <div v-if="loggedIn === false"></div>
+        		<v-icon class="delete" v-else-if="box.owner == currentUser.uid" v-on:click="remove(box.id)">delete</v-icon>
+          </div>
+        </div>
     	</div>
     </div>
   </div>
@@ -126,6 +130,7 @@ export default {
 </script>
 
 <style lang="scss">
+
   .wrapper {
     height: 100%;
   }
@@ -141,17 +146,38 @@ export default {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    padding: 10px 30px 10px 30px;
   }
 
   .box {
-    width: 200px;
-    height: 200px;
+    width: 376px;
+    height: 310px;
     border: 1px solid black;
     margin: 5px;
+    padding: 5px;
 
     img {
-      width: 100px;
-      height: 100px;
+      width: 100%;
+      height: 90%;
     }
-  }  
+  }
+
+  .bottomBox {
+    display: flex;
+    justify-content: space-between;  
+  }
+
+  .infoBox {
+    display: flex;
+
+    div {
+      margin-right: 12px;
+      cursor: default;
+    }
+  }
+
+  .delete {
+    cursor: pointer;
+  } 
+
 </style>
