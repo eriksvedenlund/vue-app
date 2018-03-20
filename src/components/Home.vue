@@ -10,6 +10,7 @@
     <div class="boxContainer">
     	<div v-for="box in boxes" class="box">
         <div>{{box.votes | total}}</div>
+        <div>{{box.comments | totalComments}}</div>
     		<router-link v-bind:to="'/info/' + box.id">{{box.title}}</router-link>
         <img v-bind:src="box.imageUrl">
         <div v-if="loggedIn === false"></div>
@@ -39,9 +40,9 @@ export default {
 			let list = [];
 			for(let key in data){
 				let loopedData = data[key];
-				for(let loopedKey in loopedData){
-					loopedData[loopedKey].id = loopedKey;
-					list.push(loopedData[loopedKey]);
+				for(let key in loopedData){
+					loopedData[key].id = key;
+					list.push(loopedData[key]);
 				}
 			}
 			this.boxes = list;
@@ -53,18 +54,20 @@ export default {
       for(let key in votes){
         list.push(votes[key]); 
       }
-      return list.map((v)=>v.vote).reduce((total, v) => {
-          return total + v}, 0);
+      return list.map((item) => item.vote).reduce((total, item) => {
+          return total + item}, 0);
+    },
+    totalComments(comments){
+      let list = [];
+      for(let key in comments){
+        let loopedComments = comments[key];
+        for(let key in loopedComments){
+          list.push(loopedComments[key]);
+        }
+      }
+      return list.length;
     }
   },
-  // computed: {
-  //   votes(){
-  //     return this.boxes;
-  //   }
-  // },
-  // firebase: {
-  // 	boxes: db.ref(`boxes`)
-  // },
   methods: {
   	send(){
       this.sendError = '';
