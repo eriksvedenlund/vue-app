@@ -1,21 +1,23 @@
 <template>
   <div class="wrapper">
     <div class="inputContainer">
-    	<label>Title</label>
-    	<input type="text" v-model="title" />
-      <input type="file" accept="image/*" v-on:change="pickFile" ref="fileInput" />
-    	<v-btn color="primary" v-on:click="send">Send</v-btn>
+      <v-text-field label="Title" v-model="title" class="titleInput"></v-text-field>
+      <input id="file" type="file" accept="image/*" v-on:change="pickFile" ref="fileInput" />
+      <div>
+        <v-btn v-on:click="triggerFile">{{this.labelMsg}}</v-btn>
+    	  <v-btn color="primary" v-on:click="send">post</v-btn>
+      </div>
       <div>{{sendError}}</div>
     </div>
     <div class="boxContainer">
     	<div v-for="box in boxes" class="box">
-        <img v-bind:src="box.imageUrl">
+        <router-link v-bind:to="'/info/' + box.id"><img v-bind:src="box.imageUrl"></router-link>
         <div class="bottomBox">
-          <div><router-link v-bind:to="'/info/' + box.id">{{box.title}}</router-link></div>
+          <router-link v-bind:to="'/info/' + box.id"><h3>{{box.title}}</h3></router-link>
           <div class="infoBox">
             <div><v-icon>thumb_up</v-icon>{{box.votes | total}}</div>
             <div><v-icon>mode_comment</v-icon>{{box.comments | totalComments}}</div>
-            <div v-if="loggedIn === false"></div>
+            <span v-if="loggedIn === false"></span>
         		<v-icon class="delete" v-else-if="box.owner == currentUser.uid" v-on:click="remove(box.id)">delete</v-icon>
           </div>
         </div>
@@ -34,7 +36,8 @@ export default {
       title: '',
       boxes: [],
       sendError: '',
-      image: null
+      image: null,
+      labelMsg: 'Choose an image'
     }
   },
   name: 'Home',
@@ -86,7 +89,7 @@ export default {
           if(fileType !== 'image'){
             this.sendError = 'Please select a valid image';
             this.image = null;
-            this.$refs.fileInput.value = '';
+            this.labelMsg = 'Choose an image';
           } else {
         		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid})
               .then((data) => {
@@ -96,7 +99,7 @@ export default {
               .then((key) => {
                 const filename = this.image.name;
                 const ext = filename.slice(filename.lastIndexOf('.'));
-                this.$refs.fileInput.value = '';  
+                this.labelMsg = 'Choose an image';  
                 return storage.ref('images/' + key + '.' + ext).put(this.image);
               })
               .then((fileData) => {
@@ -114,7 +117,7 @@ export default {
         this.sendError = 'You need to sign in to post';
         this.title = '';
         this.image = null;
-        this.$refs.fileInput.value = '';
+        this.labelMsg = 'Choose an image';
       }
     },
 
@@ -122,8 +125,18 @@ export default {
   		db.ref(`boxes/${this.currentUser.uid}/${id}`).remove();
   	},
 
+    triggerFile(){
+      this.$refs.fileInput.click();
+    },
+
     pickFile(event){
-      this.image = event.target.files[0];
+      if(event.target.files[0] !== undefined){
+        this.image = event.target.files[0];
+        this.labelMsg = this.image.name;
+      } else {
+        this.image = null;
+        this.labelMsg = 'Choose an image';
+      }
     }
   }
 }
@@ -133,12 +146,36 @@ export default {
 
   .wrapper {
     height: 100%;
+    background-color: #EDECED;
   }
 
   .inputContainer {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
+  }
+
+  #file {
+    display: none;
+  }
+
+  // .fileLabel {
+  //   background-color: #e0e0e0;
+  //   padding: 5px;
+  //   box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+  //   cursor: pointer;
+  //   margin-bottom: 5px;
+  // }
+
+  .titleInput {
+    width: 20%;
+    color: black !important;
+    margin-bottom: -5px;
+  }
+
+  .primary--text input {
+    caret-color: black !important;
   }
 
   .boxContainer {
@@ -152,9 +189,10 @@ export default {
   .box {
     width: 376px;
     height: 310px;
-    border: 1px solid black;
     margin: 5px;
     padding: 5px;
+    background-color: white;
+    box-shadow: 3px 3px 10px black;
 
     img {
       width: 100%;
@@ -164,11 +202,21 @@ export default {
 
   .bottomBox {
     display: flex;
-    justify-content: space-between;  
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      margin-left: 8px;
+    }
   }
 
   .infoBox {
     display: flex;
+    align-items: center;
+
+    i {
+      color: #424242 !important;
+    }
 
     div {
       margin-right: 12px;

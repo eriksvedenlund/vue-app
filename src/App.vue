@@ -32,3 +32,14 @@ export default {
   }
 }
 </script>
+
+<style>
+  .application {
+    line-height: normal;
+  }
+
+  a {
+    text-decoration: none;
+    color: #424242 !important;
+  }
+</style>

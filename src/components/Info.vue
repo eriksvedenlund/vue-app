@@ -44,9 +44,9 @@ export default {
       let list = [];
       for(let key in data){
         let loopedData = data[key];
-        for(let loopedKey in loopedData){
-          loopedData[loopedKey].id = loopedKey;
-          list.push(loopedData[loopedKey]);
+        for(let key in loopedData){
+          loopedData[key].id = key;
+          list.push(loopedData[key]);
         }
       }
       this.boxes = list;
