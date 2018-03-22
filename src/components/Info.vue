@@ -4,7 +4,7 @@
     <div v-for="commentObj in filteredBoxes[0].comments">
       <div v-for="comment in commentObj">
         {{comment.comment}} {{comment.commentOwnerName}}
-        <div v-if="loggedIn === false"></div>
+        <div v-if="!loggedIn"></div>
         <v-btn color="primary" v-else-if="comment.commentOwnerId == currentUser.uid" v-on:click="removeComment(comment.id)">
         ta väck</v-btn>
       </div>
@@ -17,9 +17,9 @@
     </v-text-field>
     <v-btn color="info" v-on:click="postComment">post</v-btn>
     <div>
-      <v-icon v-bind:class="{upvoted : this.userVote > 0}" class="thumb" v-on:click="upVote">thumb_up</v-icon>  
+      <v-icon v-bind:class="{upvoted : userVote > 0}" class="thumb" v-on:click="upVote">thumb_up</v-icon>  
       <div>{{allVotes}}</div>
-      <v-icon v-bind:class="{downvoted : this.userVote < 0}" class="thumb" v-on:click="downVote">thumb_down</v-icon>
+      <v-icon v-bind:class="{downvoted : userVote < 0}" class="thumb" v-on:click="downVote">thumb_down</v-icon>
     </div>
     <p>{{errorMsg}}</p>
   </div>

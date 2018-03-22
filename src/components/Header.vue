@@ -7,7 +7,7 @@
         {{currentUser.displayName}}
         <v-btn color="primary" v-on:click="signOut">sign out</v-btn>
       </div>  
-  	  <v-dialog v-if="loggedIn === false" v-model="showSignUp" persistent max-width="500px">
+  	  <v-dialog v-if="!loggedIn" v-model="showSignUp" persistent max-width="500px">
       <v-btn color="primary" dark slot="activator">Sign Up</v-btn>
       <v-card>
         <v-card-title>
@@ -39,7 +39,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-if="loggedIn === false" v-model="showSignIn" persistent max-width="500px">
+    <v-dialog v-if="!loggedIn" v-model="showSignIn" persistent max-width="500px">
       <v-btn color="primary" dark slot="activator">Sign In</v-btn>
       <v-card>
         <v-card-title>

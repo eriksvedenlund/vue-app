@@ -4,20 +4,23 @@
       <v-text-field label="Title" v-model="title" class="titleInput"></v-text-field>
       <input id="file" type="file" accept="image/*" v-on:change="pickFile" ref="fileInput" />
       <div>
-        <v-btn v-on:click="triggerFile">{{this.labelMsg}}</v-btn>
+        <v-btn v-on:click="triggerFile">{{labelMsg}}</v-btn>
     	  <v-btn color="primary" v-on:click="send">post</v-btn>
       </div>
       <div>{{sendError}}</div>
     </div>
     <div class="boxContainer">
-    	<div v-for="box in boxes" class="box">
-        <router-link v-bind:to="'/info/' + box.id"><img v-bind:src="box.imageUrl"></router-link>
+    	<div v-for="(box, index) in boxes" class="box">
+        <div class="loaderContainer" v-if="index == boxes.length - 1 && loading">
+          <v-progress-circular :size="80" indeterminate color="primary"></v-progress-circular>
+        </div>
+        <router-link v-else v-bind:to="'/info/' + box.id"><img v-bind:src="box.imageUrl"></router-link>
         <div class="bottomBox">
           <router-link v-bind:to="'/info/' + box.id"><h3>{{box.title}}</h3></router-link>
           <div class="infoBox">
             <div><v-icon>thumb_up</v-icon>{{box.votes | total}}</div>
             <div><v-icon>mode_comment</v-icon>{{box.comments | totalComments}}</div>
-            <span v-if="loggedIn === false"></span>
+            <span v-if="!loggedIn"></span>
         		<v-icon class="delete" v-else-if="box.owner == currentUser.uid" v-on:click="remove(box.id)">delete</v-icon>
           </div>
         </div>
@@ -37,7 +40,8 @@ export default {
       boxes: [],
       sendError: '',
       image: null,
-      labelMsg: 'Choose an image'
+      labelMsg: 'Choose an image',
+      loading: false
     }
   },
   name: 'Home',
@@ -91,6 +95,7 @@ export default {
             this.image = null;
             this.labelMsg = 'Choose an image';
           } else {
+            this.loading = true;
         		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid})
               .then((data) => {
                 key = data.key;
@@ -106,6 +111,9 @@ export default {
                 this.image = null;
                 imageUrl = fileData.metadata.downloadURLs[0];
                 db.ref(`boxes/${this.currentUser.uid}`).child(key).update({imageUrl: imageUrl});
+              })
+              .then(() => {
+                this.loading = false;
               })
               .catch((error) => {
                 this.sendError = 'Something went wrong';
@@ -198,6 +206,14 @@ export default {
       width: 100%;
       height: 90%;
     }
+  }
+
+  .loaderContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 90%;
   }
 
   .bottomBox {
