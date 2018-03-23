@@ -1,27 +1,29 @@
 <template>
-  <div>
-    <div>{{filteredBoxes[0].title}}</div>
-    <div v-for="commentObj in filteredBoxes[0].comments">
-      <div v-for="comment in commentObj">
-        {{comment.comment}} {{comment.commentOwnerName}}
-        <div v-if="!loggedIn"></div>
-        <v-btn color="primary" v-else-if="comment.commentOwnerId == currentUser.uid" v-on:click="removeComment(comment.id)">
-        ta väck</v-btn>
-      </div>
-    </div>
-    <img v-bind:src="filteredBoxes[0].imageUrl">
-    <v-text-field
-      v-model="comment"
-      label="Comment"
-      multi-line>
-    </v-text-field>
-    <v-btn color="info" v-on:click="postComment">post</v-btn>
+  <div class="wrapper">
     <div>
-      <v-icon v-bind:class="{upvoted : userVote > 0}" class="thumb" v-on:click="upVote">thumb_up</v-icon>  
-      <div>{{allVotes}}</div>
-      <v-icon v-bind:class="{downvoted : userVote < 0}" class="thumb" v-on:click="downVote">thumb_down</v-icon>
+      <div>{{filteredBoxes[0].title}}</div>
+      <div v-for="commentObj in filteredBoxes[0].comments">
+        <div v-for="comment in commentObj">
+          {{comment.comment}} {{comment.commentOwnerName}}
+          <div v-if="!loggedIn"></div>
+          <v-btn color="primary" v-else-if="comment.commentOwnerId == currentUser.uid" v-on:click="removeComment(comment.id)">
+          ta väck</v-btn>
+        </div>
+      </div>
+      <img v-bind:src="filteredBoxes[0].imageUrl">
+      <v-text-field
+        v-model="comment"
+        label="Comment"
+        multi-line>
+      </v-text-field>
+      <v-btn color="info" v-on:click="postComment">post</v-btn>
+      <div>
+        <v-icon v-bind:class="{upvoted : userVote > 0}" class="thumb" v-on:click="upVote">thumb_up</v-icon>  
+        <div>{{allVotes}}</div>
+        <v-icon v-bind:class="{downvoted : userVote < 0}" class="thumb" v-on:click="downVote">thumb_down</v-icon>
+      </div>
+      <p>{{errorMsg}}</p>
     </div>
-    <p>{{errorMsg}}</p>
   </div>
 </template>
 

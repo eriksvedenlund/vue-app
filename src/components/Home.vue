@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="inputContainer">
-      <v-text-field label="Title" v-model="title" class="titleInput"></v-text-field>
+      <v-text-field label="Title" v-model="title" class="titleInput" maxlength="15"></v-text-field>
       <input id="file" type="file" accept="image/*" v-on:change="pickFile" ref="fileInput" />
       <div>
         <v-btn v-on:click="triggerFile">{{labelMsg}}</v-btn>
@@ -11,7 +11,7 @@
     </div>
     <div class="boxContainer">
     	<div v-for="(box, index) in boxes" class="box">
-        <div class="loaderContainer" v-if="index == boxes.length - 1 && loading">
+        <div class="loaderContainer" v-if="index == 0 && loading">
           <v-progress-circular :size="80" indeterminate color="primary"></v-progress-circular>
         </div>
         <router-link v-else v-bind:to="'/info/' + box.id"><img v-bind:src="box.imageUrl"></router-link>
@@ -53,7 +53,7 @@ export default {
 				let loopedData = data[key];
 				for(let key in loopedData){
 					loopedData[key].id = key;
-					list.push(loopedData[key]);
+					list.unshift(loopedData[key]);
 				}
 			}
 			this.boxes = list;
@@ -96,7 +96,7 @@ export default {
             this.labelMsg = 'Choose an image';
           } else {
             this.loading = true;
-        		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid})
+        		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid, displayName: this.currentUser.displayName})
               .then((data) => {
                 key = data.key;
                 return key;
@@ -167,14 +167,6 @@ export default {
   #file {
     display: none;
   }
-
-  // .fileLabel {
-  //   background-color: #e0e0e0;
-  //   padding: 5px;
-  //   box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
-  //   cursor: pointer;
-  //   margin-bottom: 5px;
-  // }
 
   .titleInput {
     width: 20%;
