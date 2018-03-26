@@ -7,11 +7,12 @@
         {{currentUser.displayName}}
         <v-btn color="primary" v-on:click="signOut">sign out</v-btn>
       </div>  
-  	  <v-dialog v-if="!loggedIn" v-model="showSignUp" persistent max-width="500px">
+  	  <v-dialog v-if="!loggedIn" v-model="showSignUp" max-width="500px">
       <v-btn color="primary" dark slot="activator">Sign Up</v-btn>
       <v-card>
-        <v-card-title>
-          <span class="headline">Sign Up</span>
+        <v-card-title class="closeContainer">
+          <div class="headline">Sign Up</div>
+          <div><v-icon v-on:click="closeSignUp">close</v-icon></div>
         </v-card-title>
         <v-card-text>
           <v-container grid-list-md>
@@ -34,16 +35,16 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <p>{{signUpError}}</p>
-          <v-btn color="primary" @click.native="closeSignUp">Close</v-btn>
           <v-btn color="primary" @click.native="signUp">Submit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-if="!loggedIn" v-model="showSignIn" persistent max-width="500px">
+    <v-dialog v-if="!loggedIn" v-model="showSignIn" max-width="500px">
       <v-btn color="primary" dark slot="activator">Sign In</v-btn>
       <v-card>
-        <v-card-title>
-          <span class="headline">Sign In</span>
+        <v-card-title class="closeContainer">
+          <div class="headline">Sign In</div>
+          <div><v-icon v-on:click="closeSignIn">close</v-icon></div>
         </v-card-title>
         <v-card-text>
           <v-container grid-list-md>
@@ -60,7 +61,6 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <p>{{signInError}}</p>
-          <v-btn color="primary" @click.native="closeSignIn">Close</v-btn>
           <v-btn color="primary" @click.native="signIn">Submit</v-btn>
         </v-card-actions>
       </v-card>
@@ -159,3 +159,16 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  
+  .closeContainer {
+    display: flex;
+    justify-content: space-between;
+
+    i {
+      cursor: pointer;
+    }
+  }
+
+</style>

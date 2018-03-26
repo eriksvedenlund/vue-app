@@ -10,6 +10,7 @@
           <v-icon v-bind:class="{downvoted : userVote < 0}" class="thumb" v-on:click="downVote">thumb_down</v-icon>
         </div>
       </div>
+      <p v-bind:style="{textAlign:'center'}">{{errorVote}}</p>
       <img v-bind:src="filteredBoxes[0].imageUrl">
       <v-text-field
         class="commentInput"
@@ -22,15 +23,13 @@
         rows="2">
       </v-text-field>
       <p v-bind:style="{textAlign:'center'}">{{errorMsg}}</p>
-      <div v-for="commentObj in filteredBoxes[0].comments">
-        <div v-for="comment in commentObj" class="commentContainer">
-          <h4 class="voteContainer">
-            {{comment.commentOwnerName}}
-            <span v-if="!loggedIn"></span>
-            <v-icon class="delete" v-else-if="comment.commentOwnerId == currentUser.uid" v-on:click="removeComment(comment.id)">delete</v-icon>
-          </h4>
-          <div v-bind:style="{wordWrap:'break-word'}">{{comment.comment}}</div>
-        </div>
+      <div v-for="comment in reversedComments" class="commentContainer">
+        <h4 class="voteContainer">
+          {{comment.commentOwnerName}}
+          <span v-if="!loggedIn"></span>
+          <v-icon class="delete" v-else-if="comment.commentOwnerId == currentUser.uid" v-on:click="removeComment(comment.id)">delete</v-icon>
+        </h4>
+        <div v-bind:style="{wordWrap:'break-word'}">{{comment.comment}}</div>
       </div>
     </div>
   </div>
@@ -46,6 +45,7 @@ export default {
       boxes: [],
       comment: '',
       errorMsg: '',
+      errorVote: '',
       userVote: 0
 		}
 	},
@@ -80,6 +80,16 @@ export default {
         }
       });
       return voteCount;
+    },
+    reversedComments(){
+      let list = [];
+      for(let key in this.filteredBoxes[0].comments){
+        let loopedData = this.filteredBoxes[0].comments[key];
+        for(let key in loopedData){
+          list.unshift(loopedData[key]);
+        }
+      }
+      return list;
     }
   },
   methods: {
@@ -109,24 +119,24 @@ export default {
     },
 
     upVote(){
-      this.errorMsg = '';
+      this.errorVote = '';
       if(this.loggedIn){
         let myVote = this.userVote === 1 ? 0 : 1;
         db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
         .update({vote: myVote});
       } else {
-        this.errorMsg = 'You need to sign in to vote';
+        this.errorVote = 'You need to sign in to vote';
       }
     },
 
     downVote(){
-      this.errorMsg = '';
+      this.errorVote = '';
       if(this.loggedIn){
         let myVote = this.userVote === -1 ? 0 : -1;
         db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
         .update({vote: myVote});
       } else {
-        this.errorMsg = 'You need to sign in to vote';
+        this.errorVote = 'You need to sign in to vote';
       }
     }
   }
