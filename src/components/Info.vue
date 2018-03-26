@@ -1,28 +1,37 @@
 <template>
-  <div class="wrapper">
-    <div>
-      <div>{{filteredBoxes[0].title}}</div>
-      <div v-for="commentObj in filteredBoxes[0].comments">
-        <div v-for="comment in commentObj">
-          {{comment.comment}} {{comment.commentOwnerName}}
-          <div v-if="!loggedIn"></div>
-          <v-btn color="primary" v-else-if="comment.commentOwnerId == currentUser.uid" v-on:click="removeComment(comment.id)">
-          ta väck</v-btn>
+  <div class="infoWrapper">
+    <div class="infoContainer">
+      <h2>{{filteredBoxes[0].title}}</h2>
+      <div class="voteContainer">
+        <div>{{filteredBoxes[0].displayName}}</div>
+        <div>
+          <v-icon v-bind:class="{upvoted : userVote > 0}" class="thumb" v-on:click="upVote">thumb_up</v-icon>  
+          <span>{{allVotes}}</span>
+          <v-icon v-bind:class="{downvoted : userVote < 0}" class="thumb" v-on:click="downVote">thumb_down</v-icon>
         </div>
       </div>
       <img v-bind:src="filteredBoxes[0].imageUrl">
       <v-text-field
+        class="commentInput"
         v-model="comment"
         label="Comment"
-        multi-line>
+        multi-line
+        :no-resize="true"
+        append-icon="send"
+        :append-icon-cb="postComment"
+        rows="2">
       </v-text-field>
-      <v-btn color="info" v-on:click="postComment">post</v-btn>
-      <div>
-        <v-icon v-bind:class="{upvoted : userVote > 0}" class="thumb" v-on:click="upVote">thumb_up</v-icon>  
-        <div>{{allVotes}}</div>
-        <v-icon v-bind:class="{downvoted : userVote < 0}" class="thumb" v-on:click="downVote">thumb_down</v-icon>
+      <p v-bind:style="{textAlign:'center'}">{{errorMsg}}</p>
+      <div v-for="commentObj in filteredBoxes[0].comments">
+        <div v-for="comment in commentObj" class="commentContainer">
+          <h4 class="voteContainer">
+            {{comment.commentOwnerName}}
+            <span v-if="!loggedIn"></span>
+            <v-icon class="delete" v-else-if="comment.commentOwnerId == currentUser.uid" v-on:click="removeComment(comment.id)">delete</v-icon>
+          </h4>
+          <div v-bind:style="{wordWrap:'break-word'}">{{comment.comment}}</div>
+        </div>
       </div>
-      <p>{{errorMsg}}</p>
     </div>
   </div>
 </template>
@@ -124,10 +133,46 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-  img {
-    width: 200px;
-    height: 200px;
+<style lang="scss">
+  
+  .infoWrapper {
+    height: 100%;
+    background-color: #EDECED;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .infoContainer {
+    width: 620px;
+    padding: 10px 30px;
+    background-color: white;
+    box-shadow: 2px 2px 8px #303030;
+    margin: 10px 0px 10px 0px;
+    img {
+      width: 560px;
+      height: 450px;
+    }
+  }
+
+  .voteContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .commentContainer {
+    border-bottom: 0.5px solid #bababa;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+  }
+
+  .commentInput {
+    color: black !important;
+  }
+
+  .primary--text textarea {
+    caret-color: black !important;
   }
 
   .thumb {
@@ -135,10 +180,10 @@ export default {
   }
 
   .upvoted {
-    color: limegreen;
+    color: limegreen !important;
   }
 
   .downvoted {
-    color: red;
+    color: red !important;
   }
 </style>

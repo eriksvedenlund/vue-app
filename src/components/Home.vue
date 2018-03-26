@@ -18,8 +18,8 @@
         <div class="bottomBox">
           <router-link v-bind:to="'/info/' + box.id"><h3>{{box.title}}</h3></router-link>
           <div class="infoBox">
-            <div><v-icon>thumb_up</v-icon>{{box.votes | total}}</div>
-            <div><v-icon>mode_comment</v-icon>{{box.comments | totalComments}}</div>
+            <div><v-icon>thumb_up</v-icon><span v-bind:style="{marginLeft: '4px'}">{{box.votes | total}}</span></div>
+            <div><v-icon>mode_comment</v-icon><span v-bind:style="{marginLeft: '4px'}">{{box.comments | totalComments}}</span></div>
             <span v-if="!loggedIn"></span>
         		<v-icon class="delete" v-else-if="box.owner == currentUser.uid" v-on:click="remove(box.id)">delete</v-icon>
           </div>
@@ -192,7 +192,7 @@ export default {
     margin: 5px;
     padding: 5px;
     background-color: white;
-    box-shadow: 3px 3px 10px black;
+    box-shadow: 2px 2px 8px #303030;
 
     img {
       width: 100%;
@@ -234,6 +234,7 @@ export default {
 
   .delete {
     cursor: pointer;
+    color: #424242 !important;
   } 
 
 </style>

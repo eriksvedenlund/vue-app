@@ -17,7 +17,7 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12>
-                <v-text-field label="Username" v-model="userName"></v-text-field>
+                <v-text-field label="Username" maxlength="20" v-model="userName"></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-text-field label="Email" type="email" v-model="signUpEmail"></v-text-field>
