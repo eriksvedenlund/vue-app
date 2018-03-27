@@ -17,6 +17,7 @@
         <router-link v-else v-bind:to="'/info/' + box.id"><img v-bind:src="box.imageUrl"></router-link>
         <div class="bottomBox">
           <router-link v-bind:to="'/info/' + box.id"><h3>{{box.title}}</h3></router-link>
+          <small>{{box.time}}</small>
           <div class="infoBox">
             <div><v-icon>thumb_up</v-icon><span v-bind:style="{marginLeft: '4px'}">{{box.votes | total}}</span></div>
             <div><v-icon>mode_comment</v-icon><span v-bind:style="{marginLeft: '4px'}">{{box.comments | totalComments}}</span></div>
@@ -31,6 +32,7 @@
 
 <script>
 import { boxesRef, db, storage } from '../firebaseConfig';
+import moment from 'moment';
 
 export default {
   props: ['currentUser', 'loggedIn'],
@@ -96,7 +98,8 @@ export default {
             this.labelMsg = 'Choose an image';
           } else {
             this.loading = true;
-        		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid, displayName: this.currentUser.displayName})
+            let time = moment().format('DD/MM/YY HH:mm');
+        		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid, displayName: this.currentUser.displayName, time: time})
               .then((data) => {
                 key = data.key;
                 return key;

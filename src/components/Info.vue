@@ -1,8 +1,11 @@
 <template>
   <div class="infoWrapper">
     <div class="infoContainer">
-      <h2>{{filteredBoxes[0].title}}</h2>
-      <div class="voteContainer">
+      <div class="flexContainer">
+        <h2>{{filteredBoxes[0].title}}</h2>
+        <small>{{filteredBoxes[0].time}}</small>
+      </div>
+      <div class="flexContainer">
         <div>{{filteredBoxes[0].displayName}}</div>
         <div>
           <v-icon v-bind:class="{upvoted : userVote > 0}" class="thumb" v-on:click="upVote">thumb_up</v-icon>  
@@ -20,15 +23,18 @@
         :no-resize="true"
         append-icon="send"
         :append-icon-cb="postComment"
-        rows="2">
+        rows="1">
       </v-text-field>
       <p v-bind:style="{textAlign:'center'}">{{errorMsg}}</p>
       <div v-for="comment in reversedComments" class="commentContainer">
-        <h4 class="voteContainer">
-          {{comment.commentOwnerName}}
-          <span v-if="!loggedIn"></span>
-          <v-icon class="delete" v-else-if="comment.commentOwnerId == currentUser.uid" v-on:click="removeComment(comment.id)">delete</v-icon>
-        </h4>
+        <div class="flexContainer">
+          <h4>{{comment.commentOwnerName}}</h4>
+          <div>
+            <small>{{comment.time}}</small>
+            <span v-if="!loggedIn"></span>
+            <v-icon class="delete" v-else-if="comment.commentOwnerId == currentUser.uid" v-on:click="removeComment(comment.id)">delete</v-icon>
+          </div>
+        </div>
         <div v-bind:style="{wordWrap:'break-word'}">{{comment.comment}}</div>
       </div>
     </div>
@@ -37,6 +43,8 @@
 
 <script>
 import { boxesRef, db } from '../firebaseConfig';
+import moment from 'moment';
+
 export default {
   props: ['id', 'currentUser', 'loggedIn'],
 	name: 'Info',
@@ -97,8 +105,9 @@ export default {
       this.errorMsg = '';
       if(this.loggedIn){
         if(this.comment !== ''){
+          let time = moment().format('DD/MM/YY HH:mm');
           db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
-          .push({comment: this.comment, commentOwnerId: this.currentUser.uid, commentOwnerName: this.currentUser.displayName})
+          .push({comment: this.comment, commentOwnerId: this.currentUser.uid, commentOwnerName: this.currentUser.displayName, time: time})
           .then((data) => {
             this.comment = '';
             db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
@@ -165,7 +174,7 @@ export default {
     }
   }
 
-  .voteContainer {
+  .flexContainer {
     display: flex;
     align-items: center;
     justify-content: space-between;
