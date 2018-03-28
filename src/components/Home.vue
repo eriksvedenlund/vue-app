@@ -10,7 +10,7 @@
       <div>{{sendError}}</div>
     </div>
     <div class="boxContainer">
-    	<div v-for="(box, index) in boxes" class="box">
+    	<div v-for="(box, index) in visibleBoxes" class="box" v-bind:visibleBoxes="visibleBoxes" v-bind:currentPage="currentPage">
         <div class="loaderContainer" v-if="index == 0 && loading">
           <v-progress-circular :size="80" indeterminate color="primary"></v-progress-circular>
         </div>
@@ -27,12 +27,19 @@
         </div>
     	</div>
     </div>
+      <pagination
+        v-bind:boxes="boxes"
+        v-on:page:update="updatePage"
+        v-bind:currentPage="currentPage"
+        v-bind:pageSize="pageSize">
+      </pagination>
   </div>
 </template>
 
 <script>
 import { boxesRef, db, storage } from '../firebaseConfig';
 import moment from 'moment';
+import Pagination from './Pagination';
 
 export default {
   props: ['currentUser', 'loggedIn'],
@@ -43,10 +50,16 @@ export default {
       sendError: '',
       image: null,
       labelMsg: 'Choose an image',
-      loading: false
+      loading: false,
+      currentPage: 0,
+      pageSize: 6,
+      visibleBoxes: []
     }
   },
   name: 'Home',
+  components: {
+    'pagination': Pagination
+  },
   created(){
   		db.ref(`boxes`).on('value', (snapshot) => {
 			let data = snapshot.val();
@@ -56,8 +69,12 @@ export default {
         list.unshift(data[key]);
       }
 			this.boxes = list;
-		});
+      this.updateVisibleBoxes();
+    });
   },
+  // beforeMount(){
+  //   this.updateVisibleBoxes();
+  // },
   filters: {
     total(votes){
       let list = [];
@@ -111,6 +128,7 @@ export default {
               })
               .then(() => {
                 this.loading = false;
+                this.updateVisibleBoxes();
               })
               .catch((error) => {
                 this.sendError = 'Something went wrong';
@@ -128,6 +146,7 @@ export default {
 
   	remove(id){
   		db.ref(`boxes/${id}`).remove();
+      this.updateVisibleBoxes();
   	},
 
     triggerFile(){
@@ -142,6 +161,19 @@ export default {
         this.image = null;
         this.labelMsg = 'Choose an image';
       }
+    },
+
+    updateVisibleBoxes(){
+      this.visibleBoxes = this.boxes.slice(this.currentPage * this.pageSize, (this.currentPage * this.pageSize) + this.pageSize)
+
+      if(this.visibleBoxes.length == 0 && this.currentPage > 0){
+        this.updatePage(this.currentPage - 1);
+      }
+    },
+
+    updatePage(pageNumber){
+      this.currentPage = pageNumber;
+      this.updateVisibleBoxes();
     }
   }
 }
