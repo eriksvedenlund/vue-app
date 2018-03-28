@@ -62,11 +62,8 @@ export default {
       let data = snapshot.val();
       let list = [];
       for(let key in data){
-        let loopedData = data[key];
-        for(let key in loopedData){
-          loopedData[key].id = key;
-          list.push(loopedData[key]);
-        }
+        data[key].id = key;
+        list.unshift(data[key]);
       }
       this.boxes = list;
     });
@@ -92,10 +89,7 @@ export default {
     reversedComments(){
       let list = [];
       for(let key in this.filteredBoxes[0].comments){
-        let loopedData = this.filteredBoxes[0].comments[key];
-        for(let key in loopedData){
-          list.unshift(loopedData[key]);
-        }
+        list.unshift(this.filteredBoxes[0].comments[key]);
       }
       return list;
     }
@@ -106,11 +100,11 @@ export default {
       if(this.loggedIn){
         if(this.comment !== ''){
           let time = moment().format('DD/MM/YY HH:mm');
-          db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
+          db.ref(`boxes/${this.filteredBoxes[0].id}/comments/`)
           .push({comment: this.comment, commentOwnerId: this.currentUser.uid, commentOwnerName: this.currentUser.displayName, time: time})
           .then((data) => {
             this.comment = '';
-            db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}`)
+            db.ref(`boxes/${this.filteredBoxes[0].id}/comments/`)
             .child(data.key).update({id: data.key});
           })
         } else {
@@ -123,7 +117,7 @@ export default {
     },
 
     removeComment(id){
-      db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/comments/${this.currentUser.uid}/${id}`)
+      db.ref(`boxes/${this.filteredBoxes[0].id}/comments/${id}`)
       .remove();
     },
 
@@ -131,7 +125,7 @@ export default {
       this.errorVote = '';
       if(this.loggedIn){
         let myVote = this.userVote === 1 ? 0 : 1;
-        db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
+        db.ref(`boxes/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
         .update({vote: myVote});
       } else {
         this.errorVote = 'You need to sign in to vote';
@@ -142,7 +136,7 @@ export default {
       this.errorVote = '';
       if(this.loggedIn){
         let myVote = this.userVote === -1 ? 0 : -1;
-        db.ref(`boxes/${this.filteredBoxes[0].owner}/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
+        db.ref(`boxes/${this.filteredBoxes[0].id}/votes/${this.currentUser.uid}`)
         .update({vote: myVote});
       } else {
         this.errorVote = 'You need to sign in to vote';

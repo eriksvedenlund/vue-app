@@ -52,12 +52,9 @@ export default {
 			let data = snapshot.val();
 			let list = [];
 			for(let key in data){
-				let loopedData = data[key];
-				for(let key in loopedData){
-					loopedData[key].id = key;
-					list.unshift(loopedData[key]);
-				}
-			}
+        data[key].id = key;
+        list.unshift(data[key]);
+      }
 			this.boxes = list;
 		});
   },
@@ -73,10 +70,7 @@ export default {
     totalComments(comments){
       let list = [];
       for(let key in comments){
-        let loopedComments = comments[key];
-        for(let key in loopedComments){
-          list.push(loopedComments[key]);
-        }
+        list.push(comments[key]);
       }
       return list.length;
     }
@@ -99,7 +93,7 @@ export default {
           } else {
             this.loading = true;
             let time = moment().format('DD/MM/YY HH:mm');
-        		db.ref(`boxes/${this.currentUser.uid}`).push({title: this.title, owner: this.currentUser.uid, displayName: this.currentUser.displayName, time: time})
+        		db.ref('boxes/').push({title: this.title, owner: this.currentUser.uid, displayName: this.currentUser.displayName, time: time})
               .then((data) => {
                 key = data.key;
                 return key;
@@ -113,7 +107,7 @@ export default {
               .then((fileData) => {
                 this.image = null;
                 imageUrl = fileData.metadata.downloadURLs[0];
-                db.ref(`boxes/${this.currentUser.uid}`).child(key).update({imageUrl: imageUrl});
+                db.ref('boxes/').child(key).update({imageUrl: imageUrl});
               })
               .then(() => {
                 this.loading = false;
@@ -133,7 +127,7 @@ export default {
     },
 
   	remove(id){
-  		db.ref(`boxes/${this.currentUser.uid}/${id}`).remove();
+  		db.ref(`boxes/${id}`).remove();
   	},
 
     triggerFile(){
