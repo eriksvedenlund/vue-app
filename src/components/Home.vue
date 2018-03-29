@@ -72,9 +72,6 @@ export default {
       this.updateVisibleBoxes();
     });
   },
-  // beforeMount(){
-  //   this.updateVisibleBoxes();
-  // },
   filters: {
     total(votes){
       let list = [];
@@ -128,7 +125,6 @@ export default {
               })
               .then(() => {
                 this.loading = false;
-                this.updateVisibleBoxes();
               })
               .catch((error) => {
                 this.sendError = 'Something went wrong';
@@ -146,7 +142,6 @@ export default {
 
   	remove(id){
   		db.ref(`boxes/${id}`).remove();
-      this.updateVisibleBoxes();
   	},
 
     triggerFile(){

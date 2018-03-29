@@ -26,7 +26,7 @@
         rows="1">
       </v-text-field>
       <p v-bind:style="{textAlign:'center'}">{{errorMsg}}</p>
-      <div v-for="comment in reversedComments" class="commentContainer">
+      <div v-for="comment in visibleComments" class="commentContainer">
         <div class="flexContainer">
           <h4>{{comment.commentOwnerName}}</h4>
           <div>
@@ -37,6 +37,12 @@
         </div>
         <div v-bind:style="{wordWrap:'break-word'}">{{comment.comment}}</div>
       </div>
+      <comment-pagination
+        v-bind:reversedComments="reversedComments"
+        v-on:page:update="updatePage"
+        v-bind:currentPage="currentPage"
+        v-bind:pageSize="pageSize">
+      </comment-pagination>
     </div>
   </div>
 </template>
@@ -44,17 +50,24 @@
 <script>
 import { boxesRef, db } from '../firebaseConfig';
 import moment from 'moment';
+import CommentPagination from './CommentPagination';
 
 export default {
   props: ['id', 'currentUser', 'loggedIn'],
 	name: 'Info',
+  components: {
+    'comment-pagination': CommentPagination
+  },
 	data(){
 		return {
       boxes: [],
       comment: '',
       errorMsg: '',
       errorVote: '',
-      userVote: 0
+      userVote: 0,
+      currentPage: 0,
+      pageSize: 6,
+      visibleComments: []
 		}
 	},
   created(){
@@ -66,6 +79,7 @@ export default {
         list.unshift(data[key]);
       }
       this.boxes = list;
+      this.updateVisibleComments();
     });
   },
   computed: {
@@ -141,6 +155,19 @@ export default {
       } else {
         this.errorVote = 'You need to sign in to vote';
       }
+    },
+
+    updateVisibleComments(){
+      this.visibleComments = this.reversedComments.slice(this.currentPage * this.pageSize, (this.currentPage * this.pageSize) + this.pageSize)
+
+      if(this.visibleComments.length == 0 && this.currentPage > 0){
+        this.updatePage(this.currentPage - 1);
+      }
+    },
+
+    updatePage(pageNumber){
+      this.currentPage = pageNumber;
+      this.updateVisibleComments();
     }
   }
 }
