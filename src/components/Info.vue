@@ -226,4 +226,35 @@ export default {
   .downvoted {
     color: red !important;
   }
+
+  @media screen and (max-width: 670px) {
+    .infoContainer {
+      width: 540px;
+      img {
+        width: 480px;
+        height: 390px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 570px) {
+    .infoContainer {
+      width: 440px;
+      img {
+        width: 380px;
+        height: 310px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 470px) {
+    .infoContainer {
+      width: 340px;
+      img {
+        width: 280px;
+        height: 230px;
+      }
+    }
+  }  
+
 </style>

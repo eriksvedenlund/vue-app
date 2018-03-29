@@ -261,4 +261,25 @@ export default {
     color: #424242 !important;
   } 
 
+  @media screen and (max-width: 900px) {
+    .boxContainer {
+      padding: 0;
+    }
+
+    .titleInput {
+      width: 35%;
+    }
+  }
+
+  @media screen and (max-width: 470px) {
+    .box {
+      width: 280px;
+      height: 227px;
+    }
+
+    .titleInput {
+      width: 50%;
+    }
+  }
+
 </style>

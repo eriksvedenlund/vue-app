@@ -1,8 +1,8 @@
 <template>
   <v-toolbar>
   	<div><router-link to="/">Vue app</router-link></div>
-    <v-layout row v-bind:style="{justifyContent: 'flex-end'}">
-      <div v-if="currentUser">
+    <v-layout row v-bind:style="{justifyContent: 'flex-end'}" class="userDivContainer">
+      <div class="userDiv" v-if="currentUser">
         <v-icon left>account_circle</v-icon>
         {{currentUser.displayName}}
         <v-btn color="primary" v-on:click="signOut">sign out</v-btn>
@@ -170,6 +170,23 @@ export default {
 
     i {
       cursor: pointer;
+    }
+  }
+
+  @media screen and (max-width: 470px) {
+    .userDiv {
+      font-size: 11px;
+
+      i {
+        font-size: 20px;
+      }
+
+      .btn {
+        font-size: 12px;
+        width: 70px;
+        heigth: 32px;
+        min-width: 0;
+      }
     }
   }
 

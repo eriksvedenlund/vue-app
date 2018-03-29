@@ -1,5 +1,5 @@
 <template>
-	<div v-if="totalPages() > 0" class="pagination-wrapper">
+	<div v-if="totalPages() > 0" class="comment-pagination-wrapper">
 		<span v-if="showPreviousLink()" class="pagination-btn" v-on:click="updatePage(currentPage - 1)">
 			<v-icon>keyboard_arrow_left</v-icon>
 		</span>
@@ -32,19 +32,10 @@
 </script>
 
 <style lang="scss">
-	.pagination-wrapper {
+	.comment-pagination-wrapper {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin: 10px 0px 20px 0px;
-	}
-
-	.pagination-btn {
-		cursor: pointer;
-
-		i {
-			font-size: 30px;
-    	color: #424242 !important;
-		}
+		margin: 20px 0px 10px 0px;
 	}
 </style>
