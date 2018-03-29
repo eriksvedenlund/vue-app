@@ -97,13 +97,15 @@ export default {
 				if(this.signUpPassword.length >= 6 || this.signUpConfirmPassword.length >= 6){
 					firebase.auth().createUserWithEmailAndPassword(this.signUpEmail, this.signUpPassword)
 						.then((user) => {
-							user.updateProfile({ displayName: this.userName });
-							this.showSignUp = false;
-              this.userName = '';
-              this.signUpError = '';
-              this.signUpEmail = '';
-              this.signUpPassword = '';
-              this.signUpConfirmPassword = '';
+							user.updateProfile({ displayName: this.userName }).then(() => {
+  							this.showSignUp = false;
+                this.userName = '';
+                this.signUpError = '';
+                this.signUpEmail = '';
+                this.signUpPassword = '';
+                this.signUpConfirmPassword = '';
+                this.$forceUpdate();
+              });
 						})
 						.catch(() => {
 							this.signUpError = 'Email is invalid';
