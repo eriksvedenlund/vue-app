@@ -35,7 +35,8 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <p>{{signUpError}}</p>
-          <v-btn color="primary" @click.native="signUp">Submit</v-btn>
+          <v-progress-circular :size="35" indeterminate color="primary" v-if="loading"></v-progress-circular>
+          <v-btn color="primary" v-else @click.native="signUp">Submit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -61,7 +62,8 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <p>{{signInError}}</p>
-          <v-btn color="primary" @click.native="signIn">Submit</v-btn>
+          <v-progress-circular :size="35" indeterminate color="primary" v-if="loading"></v-progress-circular>
+          <v-btn color="primary" v-else @click.native="signIn">Submit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -85,19 +87,23 @@ export default {
     		signUpPassword: '',
     		signUpConfirmPassword: '',
     		signInError: '',
-    		signUpError: ''	
+    		signUpError: '',
+        loading: false
     }
   },
   name: 'Header',
   methods: {
   	signUp(){
+    this.signUpError = '';
 		if(this.userName !== ''){
 			if(this.signUpPassword === this.signUpConfirmPassword){
 				if(this.signUpPassword.length >= 6 || this.signUpConfirmPassword.length >= 6){
+          this.loading = true;
 					firebase.auth().createUserWithEmailAndPassword(this.signUpEmail, this.signUpPassword)
 						.then((user) => {
 							user.updateProfile({ displayName: this.userName }).then(() => {
   							this.showSignUp = false;
+                this.loading = false;
                 this.userName = '';
                 this.signUpError = '';
                 this.signUpEmail = '';
@@ -108,6 +114,7 @@ export default {
 						})
 						.catch(() => {
 							this.signUpError = 'Email is invalid';
+              this.loading = false;
 						});
 				} else {
 					this.signUpError = 'Password must be atleast 6 characters';
@@ -125,16 +132,20 @@ export default {
   	},
 
     signIn(){
+      this.signInError = '';
       if(this.signInEmail !== '' && this.signInPassword !== ''){
+        this.loading = true;
         firebase.auth().signInWithEmailAndPassword(this.signInEmail, this.signInPassword)
           .then((user) => {
               this.showSignIn = false;
+              this.loading = false;
               this.signInEmail = '';
               this.signInPassword = '';
               this.signInError = '';
           })
           .catch(() => {
             this.signInError = 'Wrong Email or Password';
+            this.loading = false;
           });
       }
       else {
