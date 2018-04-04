@@ -81,7 +81,6 @@ export default {
       	userName: '',
     		signInEmail: '',
     		signInPassword: '',
-    		signInError: '',
     		signUpEmail: '',
     		signUpPassword: '',
     		signUpConfirmPassword: '',
