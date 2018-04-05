@@ -113,7 +113,7 @@ export default {
       this.errorMsg = '';
       if(this.loggedIn){
         if(this.comment !== ''){
-          let time = moment().format('DD/MM/YY HH:mm');
+          let time = moment().format('YY/MM/DD HH:mm');
           db.ref(`boxes/${this.filteredBoxes[0].id}/comments/`)
           .push({comment: this.comment, commentOwnerId: this.currentUser.uid, commentOwnerName: this.currentUser.displayName, time: time})
           .then((data) => {

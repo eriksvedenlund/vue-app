@@ -106,7 +106,7 @@ export default {
             this.labelMsg = 'Choose an image';
           } else {
             this.loading = true;
-            let time = moment().format('DD/MM/YY HH:mm');
+            let time = moment().format('YY/MM/DD HH:mm');
         		db.ref('boxes/').push({title: this.title, owner: this.currentUser.uid, displayName: this.currentUser.displayName, time: time})
               .then((data) => {
                 key = data.key;
