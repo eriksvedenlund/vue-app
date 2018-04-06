@@ -2,7 +2,6 @@
   "name": "vue-app",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "homepage": "https://github.com/eriksvedenlund/",
   "author": "eriksvedenlund <eriksvedenlund@gmail.com>",
   "private": true,
   "scripts": {
