@@ -1,6 +1,6 @@
 <template>
   <v-toolbar>
-  	<div><router-link to="/">Vue app</router-link></div>
+  	<div><router-link to="/">Vue App</router-link></div>
     <v-layout row v-bind:style="{justifyContent: 'flex-end'}" class="userDivContainer">
       <div class="userDiv" v-if="currentUser">
         <v-icon left>account_circle</v-icon>
