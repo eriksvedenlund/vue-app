@@ -192,18 +192,11 @@ export default {
     display: none;
   }
 
-  // .titleInput {
-  //   width: 20%;
-  //   color: black !important;
-  //   margin-bottom: -5px;
-  // }
-
   .primary--text input {
     caret-color: black !important;
   }
 
   .boxContainer {
-    // height: 100vh;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -267,7 +260,7 @@ export default {
     }
 
     .titleInput {
-      width: 35%;
+      width: 35% !important;
     }
   }
 
@@ -275,10 +268,14 @@ export default {
     .box {
       width: 280px;
       height: 227px;
+
+      img {
+        height: 88%;
+      }
     }
 
     .titleInput {
-      width: 50%;
+      width: 50% !important;
     }
   }
 
