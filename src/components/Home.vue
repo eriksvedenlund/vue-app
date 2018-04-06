@@ -267,7 +267,7 @@ export default {
   @media screen and (max-width: 470px) {
     .box {
       width: 280px;
-      height: 227px;
+      height: 226px;
 
       img {
         height: 88%;
