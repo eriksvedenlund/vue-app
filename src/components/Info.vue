@@ -202,7 +202,7 @@ export default {
   }
 
   .commentContainer {
-    border-bottom: 0.5px solid #bababa;
+    border-bottom: 0.6px solid #bababa;
     margin-bottom: 10px;
     padding-bottom: 10px;
   }
