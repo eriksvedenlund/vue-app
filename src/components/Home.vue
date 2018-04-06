@@ -214,6 +214,7 @@ export default {
     img {
       width: 100%;
       height: 90%;
+      object-fit: cover;
     }
   }
 

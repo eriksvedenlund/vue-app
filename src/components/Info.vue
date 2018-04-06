@@ -191,7 +191,8 @@ export default {
     margin: 10px 0px 10px 0px;
     img {
       width: 560px;
-      height: 450px;
+      // height: 450px;
+      object-fit: cover;
     }
   }
 
@@ -228,7 +229,7 @@ export default {
       width: 540px;
       img {
         width: 480px;
-        height: 390px;
+        // height: 390px;
       }
     }
   }
@@ -238,7 +239,7 @@ export default {
       width: 440px;
       img {
         width: 380px;
-        height: 310px;
+        // height: 310px;
       }
     }
   }
@@ -248,7 +249,7 @@ export default {
       width: 340px;
       img {
         width: 280px;
-        height: 230px;
+        // height: 230px;
       }
     }
   }  
