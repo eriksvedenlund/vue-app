@@ -16,7 +16,7 @@
       <p v-bind:style="{textAlign:'center'}">{{errorVote}}</p>
       <img v-bind:src="filteredBoxes[0].imageUrl">
       <v-text-field
-        class="commentInput"
+        v-bind:style="{color: 'black !important'}"
         v-model="comment"
         label="Comment"
         multi-line
@@ -205,10 +205,6 @@ export default {
     border-bottom: 0.5px solid #bababa;
     margin-bottom: 10px;
     padding-bottom: 10px;
-  }
-
-  .commentInput {
-    color: black !important;
   }
 
   .primary--text textarea {
