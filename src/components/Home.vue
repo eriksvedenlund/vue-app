@@ -22,7 +22,7 @@
             <div><v-icon>thumb_up</v-icon><span v-bind:style="{marginLeft: '4px'}">{{box.votes | total}}</span></div>
             <div><v-icon>mode_comment</v-icon><span v-bind:style="{marginLeft: '4px'}">{{box.comments | totalComments}}</span></div>
             <span v-if="!loggedIn"></span>
-        		<v-icon class="delete" v-else-if="box.owner == currentUser.uid" v-on:click="remove(box.id)">delete</v-icon>
+        		<v-icon class="delete" v-else-if="box.owner == currentUser.uid" v-on:click="remove(box.id, box.storagePath)">delete</v-icon>
           </div>
         </div>
     	</div>
@@ -95,6 +95,7 @@ export default {
       if(this.loggedIn){
         let imageUrl;
         let key;
+        let storagePath;
         if(this.title === '' || this.image === null){
           this.sendError = 'Fill out title and image to post';
         } else {
@@ -116,12 +117,13 @@ export default {
                 const filename = this.image.name;
                 const ext = filename.slice(filename.lastIndexOf('.'));
                 this.labelMsg = 'Choose an image';  
-                return storage.ref('images/' + key + '.' + ext).put(this.image);
+                return storage.ref('images/' + key + ext).put(this.image);
               })
               .then((fileData) => {
                 this.image = null;
                 imageUrl = fileData.metadata.downloadURLs[0];
-                db.ref('boxes/').child(key).update({imageUrl: imageUrl});
+                storagePath = fileData.metadata.fullPath;
+                db.ref('boxes/').child(key).update({imageUrl: imageUrl, storagePath: storagePath});
               })
               .then(() => {
                 this.loading = false;
@@ -140,7 +142,8 @@ export default {
       }
     },
 
-  	remove(id){
+  	remove(id, storagePath){
+      storage.ref(storagePath).delete();
   		db.ref(`boxes/${id}`).remove();
   	},
 
