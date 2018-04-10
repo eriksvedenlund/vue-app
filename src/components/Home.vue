@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <div class="inputContainer">
-      <v-text-field label="Title" v-bind:style="{width: '20%', color: 'black !important', marginBottom: '-5px'}" v-model="title" class="titleInput" maxlength="12"></v-text-field>
+      <v-text-field label="Title" v-bind:style="{width: '21%', color: 'black !important', marginBottom: '-5px'}" v-model="title" class="titleInput" maxlength="12"></v-text-field>
       <input id="file" type="file" accept="image/*" v-on:change="pickFile" ref="fileInput" />
       <div>
         <v-btn v-on:click="triggerFile">{{labelMsg}}</v-btn>
