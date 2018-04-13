@@ -19,11 +19,9 @@
         v-bind:style="{color: 'black !important'}"
         v-model="comment"
         label="Comment"
-        multi-line
-        :no-resize="true"
         append-icon="send"
         :append-icon-cb="postComment"
-        rows="1">
+        v-on:keyup.enter="postComment">
       </v-text-field>
       <p v-bind:style="{textAlign:'center'}">{{errorMsg}}</p>
       <div v-for="comment in visibleComments" class="commentContainer">
